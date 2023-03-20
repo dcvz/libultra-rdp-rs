@@ -1,0 +1,14 @@
+[package]
+name = "rdp"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rdp"
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[features]
+
+[dependencies]
+byteorder = "1.4.3"
+wasm-bindgen = "0.2.45"
