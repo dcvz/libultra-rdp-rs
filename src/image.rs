@@ -1,7 +1,7 @@
+use super::utils::I32MathExt;
 use byteorder::BigEndian;
 use byteorder::ReadBytesExt;
 use std::io::Cursor;
-use super::utils::I32MathExt;
 use wasm_bindgen::convert::FromWasmAbi;
 use wasm_bindgen::describe::WasmDescribe;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -320,11 +320,7 @@ pub fn decode_tex_ia4(
 
             if let Ok(bit) = cursor.read_u8() {
                 let i0 = scale3to8(bit >> 5 & 0x07);
-                let a0 = if bit >> 4 & 0x01 > 0 {
-                    0xFF
-                } else {
-                    0x00
-                };
+                let a0 = if bit >> 4 & 0x01 > 0 { 0xFF } else { 0x00 };
 
                 dest[dest_index + 0] = i0;
                 dest[dest_index + 1] = i0;
@@ -332,11 +328,7 @@ pub fn decode_tex_ia4(
                 dest[dest_index + 3] = a0;
 
                 let i1 = scale3to8(bit >> 1 & 0x07);
-                let a1 = if (bit & 0x01) != 0 {
-                    0xFF
-                } else {
-                    0x00
-                };
+                let a1 = if (bit & 0x01) != 0 { 0xFF } else { 0x00 };
 
                 dest[dest_index + 4] = i1;
                 dest[dest_index + 5] = i1;

@@ -1,28 +1,46 @@
-pub fn ursi32(x: i32, n: u32) -> u32 {
-    let x_as_u32 = {
-        let bytes = x.to_be_bytes();
-        i32::from_be_bytes(bytes)
-    };
-
-    (x_as_u32 >> n) as u32
+trait I8MathExt {
+    fn ushr(self, n: u32) -> u8;
 }
 
-pub fn ursi16(x: i16, n: u16) -> u16 {
-    let x_as_u32 = {
-        let bytes = x.to_be_bytes();
-        i16::from_be_bytes(bytes)
-    };
-
-    (x_as_u32 >> n) as u16
+trait I16MathExt {
+    fn ushr(self, n: u32) -> u16;
 }
 
-pub fn ursi8(x: i8, n: u8) -> u8 {
-    let x_as_u8 = {
-        let bytes = x.to_be_bytes();
-        i8::from_be_bytes(bytes)
-    };
+pub trait U16MathExt {
+    fn shr(self, n: u32) -> u16;
+    fn ushr(self, n: u32) -> u16;
+}
 
-    (x_as_u8 >> n) as u8
+pub trait I32MathExt {
+    fn ushr(self, n: u32) -> u32;
+}
+
+impl I8MathExt for i8 {
+    fn ushr(self, n: u32) -> u8 {
+        ((self >> n) & ((1 << (8 - n)) - 1)) as u8
+    }
+}
+
+impl I16MathExt for i16 {
+    fn ushr(self, n: u32) -> u16 {
+        ((self >> n) & ((1 << (16 - n)) - 1)) as u16
+    }
+}
+
+impl U16MathExt for u16 {
+    fn shr(self, n: u32) -> u16 {
+        (self >> n) as u16
+    }
+
+    fn ushr(self, n: u32) -> u16 {
+        (self >> n) as u16
+    }
+}
+
+impl I32MathExt for i32 {
+    fn ushr(self, n: u32) -> u32 {
+        ((self >> n) & ((1 << (32 - n)) - 1)) as u32
+    }
 }
 
 #[cfg(test)]
@@ -30,14 +48,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_unsigned_right_shift() {
-        const a: i32 = 5;
-        const b: u32 = 2;
-        const c: i32= -5;
+    fn test_ursi32() {
+        assert_eq!(5i32.ushr(2), 1);
+        assert_eq!((-1 * 5i32).ushr(2), 1073741822);
+        assert_eq!(9i32.ushr(2), 2);
+        assert_eq!((-1 * 9i32).ushr(2), 1073741821);
+    }
 
-        assert_eq!(ursi32(a, b), 1);
-        assert_eq!(ursi32(c, b), 1073741822);
-        assert_eq!(ursi32(9, 2), 2);
-        assert_eq!(ursi32(-9, 2), 1073741821);
+    #[test]
+    fn test_ursi16() {
+        assert_eq!(5i16.ushr(2), 1);
+        assert_eq!((-1 * 5i16).ushr(2), 16382);
+        assert_eq!(9i16.ushr(2), 2);
+        assert_eq!((-1 * 9i16).ushr(2), 16381);
+    }
+
+    #[test]
+    fn test_ursi8() {
+        assert_eq!(5i8.ushr(2), 1);
+        assert_eq!((-1 * 5i8).ushr(2), 62);
+        assert_eq!(9i8.ushr(2), 2);
+        assert_eq!((-1 * 9i8).ushr(2), 61);
     }
 }
